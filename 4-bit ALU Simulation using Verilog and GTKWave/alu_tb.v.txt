@@ -1,0 +1,39 @@
+`timescale 1ns / 1ps
+`include "alu.v"
+module tb_alu_4bit;
+
+    reg  [3:0] A, B;
+    reg  [2:0] ALU_Sel;
+    wire [3:0] ALU_Out;
+    wire       CarryOut, Zero;
+
+    alu_4bit uut (
+        .A(A),
+        .B(B),
+        .ALU_Sel(ALU_Sel),
+        .ALU_Out(ALU_Out),
+        .CarryOut(CarryOut),
+        .Zero(Zero)
+    );
+
+    initial begin
+        // Dump file for waveform
+        $dumpfile("alu_dump.vcd");      // Name of the VCD file
+        $dumpvars(0, tb_alu_4bit);      // Dump all variables in this module
+
+        $monitor("Time=%0t | ALU_Sel=%b | A=%b B=%b | Out=%b | Carry=%b | Zero=%b", 
+                  $time, ALU_Sel, A, B, ALU_Out, CarryOut, Zero);
+
+        A = 4'd5; B = 4'd3; ALU_Sel = 3'b000; #10;
+        A = 4'd7; B = 4'd2; ALU_Sel = 3'b001; #10;
+        A = 4'd2; B = 4'd7; ALU_Sel = 3'b001; #10;
+        A = 4'd9; B = 4'd12; ALU_Sel = 3'b010; #10;
+        A = 4'd5; B = 4'd10; ALU_Sel = 3'b011; #10;
+        A = 4'd5; B = 4'd3; ALU_Sel = 3'b100; #10;
+        A = 4'd9; B = 4'd0; ALU_Sel = 3'b101; #10;
+        A = 4'd4; B = 4'd4; ALU_Sel = 3'b001; #10;
+
+        $finish;
+    end
+
+endmodule

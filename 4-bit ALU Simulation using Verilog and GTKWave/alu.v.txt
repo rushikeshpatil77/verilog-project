@@ -1,0 +1,35 @@
+module alu_4bit (
+    input  [3:0] A,
+    input  [3:0] B,
+    input  [2:0] ALU_Sel,  // Operation select
+    output reg [3:0] ALU_Out,
+    output reg       CarryOut,
+    output reg       Zero
+);
+
+    reg [4:0] temp_result; // 5 bits to hold carry
+
+    always @(*) begin
+        CarryOut = 0;
+        case (ALU_Sel)
+            3'b000: begin // ADD
+                temp_result = A + B;
+                ALU_Out = temp_result[3:0];
+                CarryOut = temp_result[4];
+            end
+            3'b001: begin // SUB
+                temp_result = A - B;
+                ALU_Out = temp_result[3:0];
+                CarryOut = (A >= B) ? 0 : 1; // Borrow flag (simplified)
+            end
+            3'b010: ALU_Out = A & B;  // AND
+            3'b011: ALU_Out = A | B;  // OR
+            3'b100: ALU_Out = A ^ B;  // XOR
+            3'b101: ALU_Out = ~A;     // NOT (only A)
+            default: ALU_Out = 4'b0000;
+        endcase
+
+        Zero = (ALU_Out == 4'b0000) ? 1'b1 : 1'b0;
+    end
+
+endmodule
